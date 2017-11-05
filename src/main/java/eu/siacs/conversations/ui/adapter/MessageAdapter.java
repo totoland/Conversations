@@ -477,7 +477,7 @@ public class MessageAdapter extends ArrayAdapter<Message> implements CopyTextVie
 				body.setSpan(new RelativeSizeSpan(1.2f), matcher.start(), matcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 			}
 
-			StylingHelper.format(body);
+			StylingHelper.format(body, true);
 
 			Linkify.addLinks(body, XMPP_PATTERN, "xmpp");
 			Linkify.addLinks(body, Patterns.AUTOLINK_WEB_URL, "http", WEBURL_MATCH_FILTER, WEBURL_TRANSFORM_FILTER);

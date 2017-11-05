@@ -37,115 +37,36 @@ import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 import android.text.style.TypefaceSpan;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import eu.siacs.conversations.ui.widget.ZeroWidthSpan;
-
 public class StylingHelper {
 
-	private static List<SpanPattern> SPAN_PATTERNS = Arrays.asList(new BoldSpanPattern(), new ItalicSpanPattern(), new StrikeThroughSpanPattern());
+	public static void format(final SpannableStringBuilder builder) {
+		format(builder, false);
+	}
 
-	private static void applySpanForPattern(SpannableStringBuilder builder, final int start, final int end) {
-		for(SpanPattern spanPattern : SPAN_PATTERNS) {
-			Matcher matcher = spanPattern.getPattern().matcher(builder).region(start, end);
-			while (matcher.find()) {
-				applySpan(builder,matcher,spanPattern.createSpan());
+	public static void format(final SpannableStringBuilder builder, final boolean replaceStyleAnnotation) {
+		for (ImStyleParser.Style style : ImStyleParser.parse(builder)) {
+			builder.setSpan(createSpanForStyle(style), style.getStart(), style.getEnd(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+			if (replaceStyleAnnotation) {
+				builder.replace(style.getStart(), style.getStart() + 1, "\u200B");
+				builder.replace(style.getEnd(), style.getEnd() + 1, "\u200B");
 			}
 		}
 	}
 
-	private static void applySpan(SpannableStringBuilder builder, Matcher matcher, ParcelableSpan span) {
-		builder.setSpan(span, matcher.start(), matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-		builder.setSpan(new ZeroWidthSpan(), matcher.start(), matcher.start() + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-		builder.setSpan(new ZeroWidthSpan(), matcher.end() - 1, matcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-	}
-
-	public static void format(SpannableStringBuilder body) {
-		final MonospaceSpanPattern monospaceSpanPattern = new MonospaceSpanPattern();
-		Matcher matcher = monospaceSpanPattern.getPattern().matcher(body);
-		int previous = 0;
-		while(matcher.find()) {
-			if (previous < matcher.start()) {
-				applySpanForPattern(body,previous,matcher.start());
-			}
-			applySpan(body,matcher,monospaceSpanPattern.createSpan());
-			previous = matcher.end();
-		}
-		if (previous < body.length()) {
-			applySpanForPattern(body,previous,body.length());
+	private static ParcelableSpan createSpanForStyle(ImStyleParser.Style style) {
+		switch (style.getCharacter()) {
+			case '*':
+				return new StyleSpan(Typeface.BOLD);
+			case '_':
+				return new StyleSpan(Typeface.ITALIC);
+			case '~':
+				return new StrikethroughSpan();
+			case '`':
+				return new TypefaceSpan("monospace");
+			default:
+				throw new AssertionError("Unknown Style");
 		}
 	}
 
-	public static abstract class SpanPattern {
-
-		private final Pattern pattern;
-
-		public SpanPattern(String c) {
-			this.pattern = Pattern.compile("(?:" + Pattern.quote(c + c) + "(.+?)" + Pattern.quote(c + c) + ")|(?:" + Pattern.quote(c) + "(.+?)" + Pattern.quote(c) + ")");
-		}
-
-		public SpanPattern(char c) {
-			this(String.valueOf(c));
-		}
-
-		public Pattern getPattern() {
-			return this.pattern;
-		}
-
-		abstract ParcelableSpan createSpan();
-	}
-
-	public static class MonospaceSpanPattern extends SpanPattern {
-
-		public MonospaceSpanPattern() {
-			super('`');
-		}
-
-		@Override
-		ParcelableSpan createSpan() {
-			return new TypefaceSpan("monospace");
-		}
-	}
-
-	public static class BoldSpanPattern extends SpanPattern {
-
-
-		public BoldSpanPattern() {
-			super('*');
-		}
-
-		@Override
-		ParcelableSpan createSpan() {
-			return new StyleSpan(Typeface.BOLD);
-		}
-	}
-
-	public static class ItalicSpanPattern extends SpanPattern {
-
-		public ItalicSpanPattern() {
-			super('_');
-		}
-
-		@Override
-		ParcelableSpan createSpan() {
-			return new StyleSpan(Typeface.ITALIC);
-		}
-	}
-
-	public static class StrikeThroughSpanPattern extends SpanPattern {
-
-
-		public StrikeThroughSpanPattern() {
-			super('~');
-		}
-
-		@Override
-		ParcelableSpan createSpan() {
-			return new StrikethroughSpan();
-		}
-	}
 
 }

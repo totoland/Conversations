@@ -40,7 +40,6 @@ dependencies {
     freeImplementation "com.android.support:support-emoji-bundled:$supportLibVersion"
     implementation 'org.bouncycastle:bcmail-jdk15on:1.52'
     implementation 'org.jitsi:org.otr4j:0.22'
-    implementation 'org.gnu.inet:libidn:1.15'
     implementation 'com.google.zxing:core:3.2.1'
     implementation 'com.google.zxing:android-integration:3.2.1'
     implementation 'de.measite.minidns:minidns-hla:0.2.4'
@@ -49,8 +48,9 @@ dependencies {
     implementation 'com.kyleduo.switchbutton:library:1.2.8'
     implementation 'org.whispersystems:signal-protocol-java:2.6.2'
     implementation 'com.makeramen:roundedimageview:2.3.0'
-    implementation "com.wefika:flowlayout:0.4.1"
+    implementation 'com.wefika:flowlayout:0.4.1'
     implementation 'net.ypresto.androidtranscoder:android-transcoder:0.2.0'
+    implementation 'rocks.xmpp:xmpp-addr:0.7.4'
 
 }
 

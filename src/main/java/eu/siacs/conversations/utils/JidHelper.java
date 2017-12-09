@@ -46,7 +46,7 @@ public class JidHelper {
 			final int index = domain.lastIndexOf('.');
 			return index > 1 ? domain.substring(0,index) : domain;
 		} else {
-			return jid.getUnescapedLocalpart();
+			return jid.getLocalpart();
 		}
 	}
 

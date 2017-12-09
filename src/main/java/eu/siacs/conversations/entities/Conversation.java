@@ -506,7 +506,7 @@ public class Conversation extends AbstractEntity implements Blockable, Comparabl
 				if (generatedName != null) {
 					return generatedName;
 				} else {
-					return getJid().getUnescapedLocalpart();
+					return getJid().getLocalpart();
 				}
 			}
 		} else if (isWithStranger()) {
